@@ -2,10 +2,11 @@
 cpu statistics monitor for linux cli
 
 
-cpusm is a cli-based system statistics monitor for linux. Developed using C, cpusm execution levies a relatively small system penalty, making it the ideal cli application for realtime statistics monitoring.
+cpusm is a cli-based system statistics monitor for linux. Developed using C, cpusm imparts a relatively small system processing penalty, making it the ideal cli application for realtime statistics monitoring.
+Execution is tri-threaded with respect to statistics collection, statistics reporting, and program command/control. 
+
 
 The code is not well documented, but I'm working on it [see cpusm.h for a breakdown of the totally intuitive and highly descriptive array, em[]]
-
 
 
 cpusm build instructions:

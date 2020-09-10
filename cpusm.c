@@ -321,12 +321,13 @@ int main(int argc, char **argv)
 //	signal(SIGINT, sig_handler);
 	
 	em[0] = dmtp(outputfile, appstart, dev, em, dur);
-	free(appstart);
+	//~ free(appstart);
 	free(dev);
 	if ( em[0] == 11 ) {
 		old_attr();
 		execvp(argv[0], argv);
 	}
+	free(appstart);
 	if ( termshort > 0 ) system(ENALINEWRAP);
 	return 0;
 }

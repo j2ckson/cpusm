@@ -26,6 +26,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 	psv0 *vv0 = (psv0*)malloc( sizeof(psv0));
 	timeZ *t = (timeZ*)malloc( sizeof(timeZ));;
 	cpuZ *g = (cpuZ*)malloc( sizeof(cpuZ));
+	dur[0] = 0L;
 	xx->colour = em[3];
 	xx->cpun = em[7];
 	xx->samples = em[1];
@@ -93,17 +94,17 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 		g->cpucorecnt = em[11];
 		g->optalg = em[8];
 	}
-	if ( dur[0] != 0 || em[1] !=0 ) {
-		t->iduri=em[1]!= 0?em[1]*dur[2]:dur[0];
-		t->idurds = t->iduri/86400;
-		t->iduri = fmod(t->iduri, 86400);
-		t->idurhs = t->iduri/3600;
-		t->iduri = fmod(t->iduri, 3600);
-		t->idurms = t->iduri/60;
-		t->idurss = fmod(t->iduri, 60);
-	}else{
-		t->idurds = t->idurhs = t->idurms = t->idurss = 0;
-	}
+	//~ if ( dur[0] != 0 || em[1] !=0 ) {
+		//~ t->iduri=em[1]!= 0?em[1]*dur[2]:dur[0];
+		//~ t->idurds = t->iduri/86400;
+		//~ t->iduri = fmod(t->iduri, 86400);
+		//~ t->idurhs = t->iduri/3600;
+		//~ t->iduri = fmod(t->iduri, 3600);
+		//~ t->idurms = t->iduri/60;
+		//~ t->idurss = fmod(t->iduri, 60);
+	//~ }else{
+		//~ t->idurds = t->idurhs = t->idurms = t->idurss = 0;
+	//~ }
 	int fresult = 0;
 	fresult = getfreqlimits( &xx->minfreq, &xx->maxfreq, &g->freqmax);
 		if ( fresult == 0 ) printf("failed to query cpu frequency limits\n");
@@ -279,6 +280,11 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 					if ( g->ch == 'q' ) {
 						sig_handler(SIGQUIT);
 						xx->sig = SIGQUIT;
+						psc->scnt = em[12];
+						printf ("\x1b[1A");
+						if ( em[27] == 0 ) print_stats_c(*psc);
+						if ( em[27] == 1 ) print_stats_cs(*psc);
+						print_stats(*vv0);
 						if ( em[27] == 0 ) print_stats_F(*vv0, *psc, *psh);
 						if ( em[27] == 1 ) print_stats_Fs(*vv0, *psc, *psh);
 						g->flop = 1;
@@ -496,8 +502,9 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 			cnt1 = cnt0;
 			if ( em[9] == 0 ) idur1 = cnt;
 			if ( em[9] == 1 ) idur1 = dur[2];
-			if ( dur[1] !=0 ) dur[0] -= idur1;
-			if ( dur[1] ==0 ) dur[0] += idur1;
+			//~ if ( dur[1] !=0 ) dur[0] -= idur1;
+			//~ if ( dur[1] ==0 ) dur[0] += idur1;
+			dur[0] += idur1;
 			xx->idur = dur[0];
 			t->iduri = dur[0];
 			t->idurh = (int)t->iduri/3600;
@@ -580,8 +587,16 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 				psc->gen_stat[0][14] = g->cStat[8];
 				psc->gen_stat[0][15] = g->cStat[9];
 			}
-			if ( em[1] == 0 ) psc->scnt = em[12]+1;
-			if ( em[1] != 0 ) psc->scnt = em[1]- ( em[12] + 1 );
+			if ( em[1] != 0 ) {
+				psc->scnt = em[1]- ( em[12] + 1 );
+			}else if ( dur[1] != (double)0 ) {
+				if ( dur[2] != 0 ) psc->scnt = rint(dur[1]/dur[2]) - (em[12] + 1);
+				if ( dur[2] == 0 ) psc->scnt = rint(dur[1]*(double)1/em[15]) - (em[12] + 1);
+			}else{
+				psc->scnt = em[12]+1;
+			}
+			//~ if ( em[1] == 0 ) psc->scnt = em[12]+1;
+			//~ if ( em[1] != 0 ) psc->scnt = em[1]- ( em[12] + 1 );
 			if ( psc->scnt % (em[20]) == 0 ) {
 				psc->sthis=psc->sthis==0?1:0;
 				psc->sthat=psc->sthis==0?1:0;

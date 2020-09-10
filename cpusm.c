@@ -325,7 +325,7 @@ int main(int argc, char **argv)
 	free(dev);
 	if ( em[0] == 11 ) {
 		old_attr();
-		execv(argv[0], argv);
+		execvp(argv[0], argv);
 	}
 	if ( termshort > 0 ) system(ENALINEWRAP);
 	return 0;

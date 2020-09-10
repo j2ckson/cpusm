@@ -1,5 +1,5 @@
 # define the install directory
-INSTALL-DIR = /usr/local/sbin/
+INSTALL-DIR = /usr/local/bin/
 
 # define the C compiler to use
 CC = gcc

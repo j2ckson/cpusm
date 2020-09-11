@@ -15,6 +15,8 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 	int jay = stepper==0?0:2;
 	int jaystep = stepper!=0?1:0;
 	int stephold = 1;
+	int runtimetype = 0;
+	int runtimecounttype = 0;
 	double idur1 = 0L;
 	double cntsum = 0L;
 	size_t yards = 247;
@@ -94,17 +96,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 		g->cpucorecnt = em[11];
 		g->optalg = em[8];
 	}
-	//~ if ( dur[0] != 0 || em[1] !=0 ) {
-		//~ t->iduri=em[1]!= 0?em[1]*dur[2]:dur[0];
-		//~ t->idurds = t->iduri/86400;
-		//~ t->iduri = fmod(t->iduri, 86400);
-		//~ t->idurhs = t->iduri/3600;
-		//~ t->iduri = fmod(t->iduri, 3600);
-		//~ t->idurms = t->iduri/60;
-		//~ t->idurss = fmod(t->iduri, 60);
-	//~ }else{
-		//~ t->idurds = t->idurhs = t->idurms = t->idurss = 0;
-	//~ }
 	int fresult = 0;
 	fresult = getfreqlimits( &xx->minfreq, &xx->maxfreq, &g->freqmax);
 		if ( fresult == 0 ) printf("failed to query cpu frequency limits\n");
@@ -280,6 +271,21 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 					if ( g->ch == 'q' ) {
 						sig_handler(SIGQUIT);
 						xx->sig = SIGQUIT;
+						int dhm[3] = {};
+						double secondx = seconds_handler(dhm, dur[0]);
+						if ( dhm[1] == 0 ) {
+							if ( dhm[2] == 0 ) {
+								if ( secondx < 60L ) {
+									sprintf(psc->runtime, "       %06.3lf", secondx);
+								}else{
+									sprintf(psc->runtime, "        %05.2lf", secondx);
+								}
+							}else{
+								sprintf(psc->runtime, "     %02i:%05.2lf", dhm[2], secondx);
+							}
+						}else{
+							sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
+						}
 						psc->scnt = em[12];
 						printf ("\x1b[1A");
 						if ( em[27] == 0 ) print_stats_c(*psc);
@@ -395,6 +401,12 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 								vv0->focus = em[23]+1;
 							}
 						}
+					}
+					if ( g->ch == 'n' ) {
+						if ( em[1] != 0 || dur[1] != 0 ) runtimetype=runtimetype==0?1:0;
+					}
+					if ( g->ch == 'b' ) {
+						if ( em[1] != 0 || dur[1] != 0 ) runtimecounttype=runtimecounttype==0?1:0;
 					}
 					if ( g->ch == '!' ) {
 						em[13]=em[13]==13?1:13;
@@ -531,6 +543,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 						xcnt = 0;
 					}
 				}else{
+					
 					if ( xcnt != 0 && xcnt % ((em[17]*(em[15]/em[21]))*em[19]) == 0 ) {
 						psh->colour = em[3];
 						psh->cpun = em[7];
@@ -556,6 +569,36 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 				psc->gen_stat[0][0] = alignment>=100?100:alignment;			
 				psc->gen_stat[0][1] = pcpu;
 				//~ psc->gen_stat[0][1] = decvar;
+			}
+			double secondx = 0L;
+			double secondssofar = dur[0];
+			double secondstogo = 0L;
+			if ( dur[1] != 0L ) {
+				secondstogo = dur[1] - dur[0];
+			}else if ( em[1] != 0 ) {
+				if ( dur[2] != 0 ) {
+					secondstogo = (double)em[1]*dur[2] - dur[0];
+				}else{
+					secondstogo = (double)(em[1]*1/em[15]) - dur[0];
+				}
+			}else{
+				secondstogo = 0L;
+			}
+			int dhm[3] = {};
+			if ( runtimetype == 0 ) secondx = seconds_handler(dhm, secondssofar);
+			if ( runtimetype == 1 ) secondx = seconds_handler(dhm, secondstogo);
+			if ( dhm[1] == 0 ) {
+				if ( dhm[2] == 0 ) {
+					if ( secondx < 60L ) {
+						sprintf(psc->runtime, "       %06.3lf", secondx);
+					}else{
+						sprintf(psc->runtime, "        %05.2lf", secondx);
+					}
+				}else{
+					sprintf(psc->runtime, "     %02i:%05.2lf", dhm[2], secondx);
+				}
+			}else{
+				sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
 			}
 			psc->idurh = t->idurh;
 			psc->idurm = t->idurm;
@@ -588,15 +631,21 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 				psc->gen_stat[0][15] = g->cStat[9];
 			}
 			if ( em[1] != 0 ) {
-				psc->scnt = em[1]- ( em[12] + 1 );
-			}else if ( dur[1] != (double)0 ) {
-				if ( dur[2] != 0 ) psc->scnt = rint(dur[1]/dur[2]) - (em[12] + 1);
-				if ( dur[2] == 0 ) psc->scnt = rint(dur[1]*(double)1/em[15]) - (em[12] + 1);
+				if ( runtimecounttype != 0 ) {
+					psc->scnt = em[1]- ( em[12] + 1 );
+				}else{
+					psc->scnt = em[12]+1;
+				}
+			}else if ( dur[1] != 0L ) {
+				if ( runtimecounttype != 0 ) {
+					if ( dur[2] != 0L ) psc->scnt = rint(dur[1]/dur[2]) - (em[12] + 1);
+					if ( dur[2] == 0L ) psc->scnt = rint(dur[1]*(double)1/em[15]) - (em[12] + 1);
+				}else{
+					psc->scnt = em[12]+1;
+				}
 			}else{
 				psc->scnt = em[12]+1;
 			}
-			//~ if ( em[1] == 0 ) psc->scnt = em[12]+1;
-			//~ if ( em[1] != 0 ) psc->scnt = em[1]- ( em[12] + 1 );
 			if ( psc->scnt % (em[20]) == 0 ) {
 				psc->sthis=psc->sthis==0?1:0;
 				psc->sthat=psc->sthis==0?1:0;
@@ -672,6 +721,11 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 		}
 	}
 	xx->sig = SIGQUIT;
+	psc->scnt = em[12];
+	printf ("\x1b[1A");
+	if ( em[27] == 0 ) print_stats_c(*psc);
+	if ( em[27] == 1 ) print_stats_cs(*psc);
+	print_stats(*vv0);
 	if ( em[27] == 0 ) print_stats_F(*vv0, *psc, *psh);
 	if ( em[27] == 1 ) print_stats_Fs(*vv0, *psc, *psh);
 	g->flop = 1;

@@ -506,4 +506,28 @@ char *commaprint(unsigned long long n)
 	}
 	return p;
 }
+void timeFormat(char runtime[], double dursofar)
+{
+	int dhm[3] = {};
+	double secondx = seconds_handler(dhm, dursofar);
+	if ( dhm[0] == 0 ) {
+		if ( dhm[1] == 0 ) {
+			if ( dhm[2] == 0 ) {
+				if ( secondx < 60L ) {
+					sprintf(runtime, "       %06.3lf", secondx);
+				}else{
+					sprintf(runtime, "        %05.2lf", secondx);
+				}
+			}else{
+				sprintf(runtime, "     %02i:%05.2lf", dhm[2], secondx);
+			}
+		}else{
+			sprintf(runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
+		}
+	}else{
+		dhm[1] += dhm[0]*24;
+		sprintf(runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
+	}
+	return;
+}
 

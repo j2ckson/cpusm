@@ -271,26 +271,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 					if ( g->ch == 'q' ) {
 						sig_handler(SIGQUIT);
 						xx->sig = SIGQUIT;
-						int dhm[3] = {};
-						double secondx = seconds_handler(dhm, dur[0]);
-						if ( dhm[0] == 0 ) {
-							if ( dhm[1] == 0 ) {
-								if ( dhm[2] == 0 ) {
-									if ( secondx < 60L ) {
-										sprintf(psc->runtime, "       %06.3lf", secondx);
-									}else{
-										sprintf(psc->runtime, "        %05.2lf", secondx);
-									}
-								}else{
-									sprintf(psc->runtime, "     %02i:%05.2lf", dhm[2], secondx);
-								}
-							}else{
-								sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
-							}
-						}else{
-							dhm[1] += dhm[0]*24;
-							sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
-						}
+						timeFormat(psc->runtime, dur[0]);
 						psc->scnt = em[12];
 						printf ("\x1b[1A");
 						if ( em[27] == 0 ) print_stats_c(*psc);
@@ -573,9 +554,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 				double alignment = (double)g->cndcnt/(double)em[12]*100L;
 				psc->gen_stat[0][0] = alignment>=100?100:alignment;			
 				psc->gen_stat[0][1] = pcpu;
-				//~ psc->gen_stat[0][1] = decvar;
 			}
-			double secondx = 0L;
 			double secondssofar = dur[0];
 			double secondstogo = 0L;
 			if ( dur[1] != 0L ) {
@@ -589,27 +568,8 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 			}else{
 				secondstogo = 0L;
 			}
-			int dhm[3] = {};
-			if ( runtimetype == 0 ) secondx = seconds_handler(dhm, secondssofar);
-			if ( runtimetype == 1 ) secondx = seconds_handler(dhm, secondstogo);
-			if ( dhm[0] == 0 ) {
-				if ( dhm[1] == 0 ) {
-					if ( dhm[2] == 0 ) {
-						if ( secondx < 60L ) {
-							sprintf(psc->runtime, "       %06.3lf", secondx);
-						}else{
-							sprintf(psc->runtime, "        %05.2lf", secondx);
-						}
-					}else{
-						sprintf(psc->runtime, "     %02i:%05.2lf", dhm[2], secondx);
-					}
-				}else{
-					sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
-				}
-			}else{
-				dhm[1] += dhm[0]*24;
-				sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
-			}
+			if ( runtimetype == 0 ) timeFormat(psc->runtime, secondssofar);
+			if ( runtimetype == 1 ) timeFormat(psc->runtime, secondstogo);
 			psc->idurh = t->idurh;
 			psc->idurm = t->idurm;
 			psc->idurs = t->idurs;
@@ -732,26 +692,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 	}
 	xx->sig = SIGQUIT;
 	psc->scnt = em[12];
-	int dhm[3] = {};
-	double secondx = seconds_handler(dhm, dur[0]);
-	if ( dhm[0] == 0 ) {
-		if ( dhm[1] == 0 ) {
-			if ( dhm[2] == 0 ) {
-				if ( secondx < 60L ) {
-					sprintf(psc->runtime, "       %06.3lf", secondx);
-				}else{
-					sprintf(psc->runtime, "        %05.2lf", secondx);
-				}
-			}else{
-				sprintf(psc->runtime, "     %02i:%05.2lf", dhm[2], secondx);
-			}
-		}else{
-			sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
-		}
-	}else{
-		dhm[1] += dhm[0]*24;
-		sprintf(psc->runtime, "%4i:%02i:%05.2lf", dhm[1], dhm[2], secondx);
-	}
+	timeFormat(psc->runtime, dur[0]);
 	printf ("\x1b[1A");
 	if ( em[27] == 0 ) print_stats_c(*psc);
 	if ( em[27] == 1 ) print_stats_cs(*psc);

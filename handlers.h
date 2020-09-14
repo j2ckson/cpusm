@@ -151,5 +151,6 @@ int getsysversion(timeD *xx);
 int getsysname(timeD *xx);
 int getsysfreqgov(timeD *xx);
 char *commaprint(unsigned long long n);
+void timeFormat(char runtime[], double dursofar);
 
 #endif

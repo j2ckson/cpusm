@@ -568,8 +568,8 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 			}else{
 				secondstogo = 0L;
 			}
-			if ( runtimetype == 0 ) timeFormat(psc->runtime, secondssofar);
-			if ( runtimetype == 1 ) timeFormat(psc->runtime, secondstogo);
+			double whichseconds = runtimetype==0?secondssofar:secondstogo;
+			timeFormat(psc->runtime, whichseconds);
 			psc->idurh = t->idurh;
 			psc->idurm = t->idurm;
 			psc->idurs = t->idurs;

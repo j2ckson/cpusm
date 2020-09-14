@@ -479,4 +479,31 @@ int set_cpuAffinity(int cpuN, int rcnt)
     if ( rcnt == 0 ) printf("\n");
     return i;
 }
+char *commaprint(unsigned long long n)
+{
+	char *p;
+	static int comma = '\0';
+	static char retbuf[30];
+	p = &retbuf[sizeof(retbuf)-1];
+	int i = 0;
+	if(comma == '\0') {
+	  struct lconv *lcp = localeconv();
+	  if(lcp != NULL) {
+		   if(lcp->thousands_sep != NULL &&
+			    *lcp->thousands_sep != '\0')
+			    comma = *lcp->thousands_sep;
+		   else    comma = ',';
+	  }
+	}
+	*p = '\0';
+	while (n != 0) {
+	  if(i%3 == 0 && i != 0) {
+		   *--p = comma;
+	  }
+	  *--p = '0' + n % 10;
+	  n /= 10;
+	  i++;
+	}
+	return p;
+}
 

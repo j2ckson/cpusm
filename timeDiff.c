@@ -23,7 +23,7 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 		double pcpu = xx.cpuspin / xx.cntsum * 100L / (double)xx.corecnt;
 		printf ("\n\n start.time:\t\t%s\n", *xy_string);
 		if (xx.sig == SIGQUIT) printf (" end.time:\t\t%s\n", yx_string);
-		if (xx.sig == SIGINT) printf (" int.time:\t\t%s\n", yx_string);
+		if (xx.sig == SIGINT && rcnt != 0 ) printf (" interim.time:\t\t%s\n", yx_string);
 		double seconds = seconds_handler(dhm, diff_time);
 		if ( dhm[0] == 0 ) printf(" run.time:\t\t%02i:%02i:%05.2lf\n", dhm[1],dhm[2],seconds);
 		if ( dhm[0] != 0 ) printf(" run.time:\t\t%02id:%02i:%02i:%05.2lf\n", dhm[0],dhm[1],dhm[2],seconds);
@@ -38,11 +38,11 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 		printf(" cpu.time:\t\t%01i:%02i:%06.3lf\n", cpuspinh, cpuspinm, cpuspins);
 		printf(" %1scpu:\t\t\t%05.3lf/%05.3lf\n", "%", pcpu*(double)xx.corecnt,pcpu);
 		if (xx.sig == SIGQUIT) printf(" actual.samples/s:\t%-5.2lf\n", ceil(a_samples/run_time));
-		if (xx.sig == SIGINT) printf(" int.samples/s:\t\t%-5.2lf\n", a_samples/run_time);
-		printf(" exp.samples/s:\t\t%-5.2lf\n", (double)1/(xx.secdecs));
-		if (xx.sig == SIGQUIT) printf(" actual.samples:\t%-9.0lf \n", a_samples);
-		if (xx.sig == SIGINT) printf(" int.samples:\t\t%-9.0lf \n", a_samples);
-		printf(" exp.samples:\t\t%-9.0lf \n", run_time/xx.secdecs);
+		if (xx.sig == SIGINT && rcnt!=0 ) printf(" interim.samples/s:\t%-5.2lf\n", a_samples/run_time);
+		printf(" expected.samples/s:\t%-5.2lf\n", (double)1/(xx.secdecs));
+		if (xx.sig == SIGQUIT) printf(" actual.samples:\t%-9s \n", commaprint(a_samples));
+		if (xx.sig == SIGINT && rcnt!=0 ) printf(" interim.samples:\t%-9s \n", commaprint(a_samples));
+		printf(" expected.samples:\t%s \n", commaprint(run_time/xx.secdecs));
 		printf(" nominal.variation:\t%-9.2lf\n", (a_samples - floor(run_time/xx.secdecs)));
 		printf(" relative.variation:\t%-9.4lf\n\n\n", rvar);
 		if ( xx.colour != 0 ) printf(ILOADLOW);
@@ -100,7 +100,7 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 				printf(" ");
 			}
 			printcc("a.freq: ", 2, xx.colour);
-			printcc("average core frequency [per interval]\n", 1, xx.colour);
+			printcc("average core frequency in MHz [per interval]\n", 1, xx.colour);
 			printcc("  o/s.version: ", 2, xx.colour);
 			printcc(xx.version, 1, xx.colour);
 			rowlength = strlen("  o/s.version: ") + strlen(xx.version);
@@ -108,7 +108,7 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 				printf(" ");
 			}
 			printcc("a.\u00B0C: ", 2, xx.colour);
-			printcc("zone temperature [degrees centigrade]\n", 1, xx.colour);
+			printcc("average system temperature in degrees centigrade [per interval]\n", 1, xx.colour);
 			printcc("  cpu.model: ", 2, xx.colour);
 			printcc(xx.model, 1, xx.colour);
 			rowlength = strlen("  cpu.model: ") + strlen(xx.model);
@@ -214,18 +214,26 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 			printcc("running system processes\n", 1, xx.colour);
 			double seconds = seconds_handler(dhm, xx.idur);
 			if ( xx.rcnt != 0 ) {
-				printcc("  int.run.time: ", 2, xx.colour);
+				printcc("  interim.run.time: ", 2, xx.colour);
 				printcc("", 1, xx.colour);
-				if ( dhm[0] == 0 ) printf("%02i:%02i:%05.2lf", dhm[1],dhm[2],seconds);
-				if ( dhm[0] != 0 ) printf ("%02id:%02i:%02i:%05.2lf", dhm[0],dhm[1],dhm[2],seconds);
+				if ( dhm[0] == 0 ) {
+					printf("%02i:%02i:%05.2lf", dhm[1],dhm[2],seconds);
+					rowlength = strlen("  interim.run.time: 00:00:00.00");
+				}else {
+					printf ("%02id:%02i:%02i:%05.2lf", dhm[0],dhm[1],dhm[2],seconds);
+					rowlength = strlen("  interim.run.time: 00d:00:00:00.00");
+				}
 			}else{
-				printcc("  exp.run.time: ", 2, xx.colour);
+				printcc("  expected.run.time: ", 2, xx.colour);
 				printcc("", 1, xx.colour);
-				if ( dhm[0] == 0 ) printf("%02i:%02i:%05.2lf", dhm[1],dhm[2],seconds);
-				if ( dhm[0] != 0 ) printf ("%02id:%02i:%02i:%05.2lf", dhm[0],dhm[1],dhm[2],seconds);
+				if ( dhm[0] == 0 ) {
+					printf("%02i:%02i:%05.2lf", dhm[1],dhm[2],seconds);
+					rowlength = strlen("  expected.run.time: 00:00:00.00");
+				}else {
+					printf ("%02id:%02i:%02i:%05.2lf", dhm[0],dhm[1],dhm[2],seconds);
+					rowlength = strlen("  expected.run.time: 00d:00:00:00.00");
+				}
 			}
-			if ( dhm[0] == 0 ) rowlength = strlen("  int.run.time: 00:00:00.00");
-			if ( dhm[0] != 0 ) rowlength = strlen("  int.run.time: 00d:00:00:00.00");
 			for ( int i=rowlength;i<rowgap-1;i++ ) {
 				printf(" ");
 			}
@@ -241,38 +249,46 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 			printcc("cpu.avg: ", 2, xx.colour);
 			printcc("cpu utilization averages [percentage]\n", 1, xx.colour);
 			double aoverrun = rcnt!=0?a_samples/run_time:0L;
-			sprintf(placeholder, "%-5.2lf", aoverrun);
-			printcc("  int.samples/s: ", 2, xx.colour);
+			if ( rcnt != 0 ) {
+				sprintf(placeholder, "%-5.2lf", aoverrun);
+			}else{
+				sprintf(placeholder, "%s", "n/a");
+			}
+			printcc("  interim.samples/s: ", 2, xx.colour);
 			printcc(placeholder, 1, xx.colour);
-			rowlength = strlen("  int.samples/s: ") + strlen(placeholder);
+			rowlength = strlen("  interim.samples/s: ") + strlen(placeholder);
 			for ( int i=rowlength;i<rowgap-1;i++ ) {
 				printf(" ");
 			}
 			printcc("spot: ", 2, xx.colour);
 			printcc("per-interval\n", 1, xx.colour);
-			printcc("  exp.samples/s: ", 2, xx.colour);
+			printcc("  expected.samples/s: ", 2, xx.colour);
 			sprintf(placeholder, "%-5.2lf", (double)1/(xx.secdecs));
 			printcc(placeholder, 1, xx.colour);
-			rowlength = strlen("  exp.samples/s: ") + strlen(placeholder);
+			rowlength = strlen("  expected.samples/s: ") + strlen(placeholder);
 			for ( int i=rowlength;i<rowgap-1;i++ ) {
 				printf(" ");
 			}
 			printcc("cuml: ", 2, xx.colour);
 			printcc("cumulative\n", 1, xx.colour);
 			double asamples = rcnt!=0?a_samples:0L;
-			sprintf(placeholder, "%.0lf", asamples);
-			printcc("  int.samples: ", 2, xx.colour);
+			if ( rcnt != 0 ) {
+				sprintf(placeholder, "%s", commaprint(asamples));
+			}else{
+				sprintf(placeholder, "%s", "n/a");
+			}
+			printcc("  interim.samples: ", 2, xx.colour);
 			printcc(placeholder, 1, xx.colour);
-			rowlength = strlen("  int.samples: ") + strlen(placeholder);
+			rowlength = strlen("  interim.samples: ") + strlen(placeholder);
 			for ( int i=rowlength;i<rowgap-1;i++ ) {
 				printf(" ");
 			}
 			printcc("r.nnxn: ", 2, xx.colour);
 			printcc("rolling average [n seconds]\n", 1, xx.colour);
-			printcc("  exp.samples: ", 2, xx.colour);
-			sprintf(placeholder, "%.0lf", xx.samples!=0?xx.samples:(rint(xx.idur/(xx.secdecs))));
+			printcc("  expected.samples: ", 2, xx.colour);
+			sprintf(placeholder, "%s", commaprint(xx.samples!=0?xx.samples:(rint(xx.idur/(xx.secdecs)))));
 			printcc(placeholder, 1, xx.colour);
-			rowlength = strlen("  exp.samples: ") + strlen(placeholder);
+			rowlength = strlen("  expected.samples: ") + strlen(placeholder);
 			for ( int i=rowlength;i<rowgap-1;i++ ) {
 				printf(" ");
 			}

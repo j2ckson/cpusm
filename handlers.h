@@ -81,6 +81,7 @@ typedef struct prntsctrl
 	double idurs;
 	double zecdecz;
 	double gen_stat[4][16];
+	char runtime[255];
 } prntsctrl;
 
 typedef struct psv0
@@ -149,5 +150,6 @@ int getsysmodel(timeD *xx);
 int getsysversion(timeD *xx);
 int getsysname(timeD *xx);
 int getsysfreqgov(timeD *xx);
+char *commaprint(unsigned long long n);
 
 #endif

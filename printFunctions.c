@@ -164,15 +164,7 @@ void print_stats_c(prntsctrl psc)
 	if ( psc.colour == 1 ) printcc("", 2, psc.colour);
 	if ( psc.colour >= 2 ) printcc("", 1, psc.colour);
 	printf ("%-10i%-7.2lf ", psc.scnt,psc.gen_stat[0][0]);
-	if ( psc.idurh > 0 ) {
-		printf ("%-6.2lf%4i:%02i:%05.2lf", psc.gen_stat[0][1],psc.idurh,psc.idurm,psc.idurs);
-	}else if ( psc.idurm > 0 ) {
-		printf ("%-6.3lf     %02i:%05.2lf", psc.gen_stat[0][1],psc.idurm,psc.idurs);
-	}else if ( psc.zecdecz > 0.1 ) {
-		printf ("%-6.3lf        %05.2lf", psc.gen_stat[0][1],psc.idurs);
-	}else{
-		printf ("%-6.3lf       %06.3lf", psc.gen_stat[0][1],psc.idurs);
-	}
+	printf ("%-6.2lf%s", psc.gen_stat[0][1], psc.runtime);
 	if ( psc.colour == 3 ) {
 		for ( int i=2;i<16;i++ ) {
 			if ( psc.focus == i-1 ) {

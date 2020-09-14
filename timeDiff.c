@@ -416,10 +416,12 @@ void time_diff(timeD xx, int rcnt, int longstart, char* *xy_string)
 			printcc("switch pcpu accounting [per-core/aggregate]\n", 1, xx.colour);
 			printcc("  <v>: ", 2, xx.colour);
 			printcc("switch statistics display length]\n", 1, xx.colour);
-			printcc("  <n>: ", 2, xx.colour);
-			printcc("switch 'runtime' statistic [running-time*, remaining-time]\n", 1, xx.colour);
-			printcc("  <b>: ", 2, xx.colour);
-			printcc("switch 'count' statistic [running-samples*, remaining-samples]\n", 1, xx.colour);
+			if ( xx.samples != 0 || xx.idurv != 0 ) {
+				printcc("  <n>: ", 2, xx.colour);
+				printcc("switch 'runtime' statistic [running-time*, remaining-time]\n", 1, xx.colour);
+				printcc("  <b>: ", 2, xx.colour);
+				printcc("switch 'count' statistic [running-samples*, remaining-samples]\n", 1, xx.colour);
+			}
 			printf("\n");
 			printcc(xx.appstart, 3, xx.colour);
 			printf("\n");

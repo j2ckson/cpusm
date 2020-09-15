@@ -1,15 +1,15 @@
 # cpusm
 cpu statistics monitor for linux cli
 
-![cpusm example 1](https://i.imgur.com/p1oGXkY.gif "cpusm example 1")
+cpusm is a cli-based system performance monitor for linux. Developed using C, cpusm imparts a relatively small system processing penalty, making it the ideal cli application for realtime performance monitoring.
 
-![cpusm example 2](https://i.imgur.com/pUu86ZN.gif "cpusm example 2")
+![cpusm example 1](https://i.imgur.com/z5Y1Kiy.gif "cpusm example 1")
 
-cpusm is a cli-based system statistics monitor for linux. Developed using C, cpusm imparts a relatively small system processing penalty, making it the ideal cli application for realtime statistics monitoring.
-Execution is tri-threaded with respect to statistics collection, statistics reporting, and program command/control. 
+![cpusm example 2](https://i.imgur.com/p1oGXkY.gif "cpusm example 2")
 
+![cpusm example 3](https://i.imgur.com/pUu86ZN.gif "cpusm example 3")
 
-The code is not well documented, but I'm working on it [see cpusm.h for a breakdown of the totally intuitive and highly descriptive array, em[]]
+cpusm captures and presents data for the following: cpu uttilization, core utilization, memory utilization, cpu frequency, core frequency, network utilization, system temperature, kernel performance, and more. Execution is multi-threaded with respect to data collection/analysis, statistics reporting, and program command/control. 
 
 
 cpusm build instructions:
@@ -21,8 +21,6 @@ cpusm build instructions:
 
 
 cpusm execution:
-
-	cpusm --help
 
 	cpusm [option]<value>...[option]<value>
 	_______________________________________________________________________________________________________________
@@ -50,11 +48,11 @@ cpusm execution:
 	-t || --interval: sample interval [s.n seconds, 0.1*, minimum == 0.001]
 	-u || --rolling: cpusm statistics rolling average interval [1* - 999] seconds
 	-v || --category: cpusm statistics category
-	        0: cpu.kernel mode
-	        1: network mode [use in conjunction with -n]
-	        2: cpu.core mode
-	        3: thermal mode
-	        4*: core.frequency mode
+		0: cpu.kernel mode
+		1: network mode [use in conjunction with -n]
+		2: cpu.core mode
+		3: thermal mode
+		4*: core.frequency mode
 	-w || --scheduler: cpusm process scheduling algorithm [0* - 6]
 	-x || --header-interval: periodic column heading display [0* == off, *40 == runtime switch default]
 	-y || --nice: cpusm execution nice value [-20 to 20, 0*]
@@ -64,21 +62,24 @@ cpusm execution:
 
 	<h>: show runtime help
 	<a>: switch core affinity [base process only - established threads will not switch
+	<b>: switch 'count' statistic [running-samples*, remaining-samples]
 	<c>: switch stdout colour
 	<q>: quit cpusm
 	<j>: enable/disable statistics step display
 	<l>: enable/disable colour-mode focus scanning
 	<m>: enable/switch colour-mode focus
-	<s>: display cpusm summary statistics
+	<n>: switch 'runtime' statistic [running-time*, remaining-time]
+	<s>: display cpusm interim summary statistics
+	<v>: switch terminal display width
 	<x>: enable/disable periodic header printing
 	<z>: restart cpusm
-	<=>: display cpusm min/max/avg statistics
-	</>: switch output mode [fixed-line/scrolling]
+	<=>: display interim cpusm min/max/avg statistics
+	</>: switch terminal scrolling mode [fixed-line/scrolling]
 	<.>: display column headings
-	<`>: switch cpusm cpu utilization tracking [core/cpu]
+	<`>: switch pcpu accounting [per-core/aggregate]
 	<,>: enable/diable stdout [file logging-mode]]
-	<SPACE>||<v>: switch display mode [cpu.kernel/cpu.core/core.frequency/thermal/network]
-
+	<1>: enable/disable precise time-tracking
+	<SPACE>: switch display mode [cpu.kernel/cpu.core/core.frequency/thermal/network]
 
 
 cpusm example output:

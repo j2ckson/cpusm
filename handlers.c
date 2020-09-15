@@ -11,15 +11,6 @@ void printcc(char* term, int colour, int basecolour)
 	printf("%s", term);
 	return;
 }
-double seconds_handler(int dhm[], double seconds)
-{
-	dhm[0] = (int)seconds/86400;
-	seconds = fmod(seconds, 86400);
-	dhm[1] = (int)seconds/3600;
-	seconds = fmod(seconds, 3600);
-	dhm[2] = (int)seconds/60;
-	return fmod(seconds, 60);
-}
 int rng(const int nMin, const int nMax, const int  nN)
 {
 	int nR = 0;
@@ -31,7 +22,6 @@ int rng(const int nMin, const int nMax, const int  nN)
 double derive_interval(int qual, int rate, double secdecs, int *slot, int *scroll)
 {
 	double decvar = 0;
-//	double cnttime = 0;
 	if ( qual == 1 && *slot != 11) {
 		cnttime = get_time_nsec();
 		if ( *slot == 19 && *scroll != 0 ) {
@@ -405,37 +395,26 @@ int getthermalzones(int *gtz, int *vtz, int *ptz)
 	pclose(fp);
 	return erresult;
 }
-void check_60(void * t, double secdecs)
+double check_60(int dhm[], double secondx, double secdecs)
 {
-	timeZ *h;
-	h=(timeZ*)t;
 	int zeczint;
 	char secheck[7];
-	sprintf(secheck, "%.0lf", h->idurs);
+	sprintf(secheck, "%.0lf", secondx);
 	zeczint = atoi(secheck);
 	if ( zeczint == 60 ) {
-		h->idurm++;
-		if ( h->idurm == 60 ) {
-			h->idurh++;
-			h->idurm = 0;
+		dhm[2]++;
+		if ( dhm[2] == 60 ) {
+			dhm[1]++;
+			dhm[2] = 0;
 		}
-		h->idurs = 0;
+		secondx = 0;
 	}
-	return;
+	return secondx;
 }
 int set_ppid(int colour)
 {
 	pid_t ppid;
 	ppid = getpid();
-	//~ FILE *fp = fopen(PPMYD, "w");
-	//~ if ( colour != 0 ) printf(CLOADLOW);
-	//~ if ( fp != NULL) {
-		//~ fprintf (fp, "%i\n", ppid);
-		//~ printf("\nprocess %i written to %s\n", ppid, PPMYD);
-	//~ } else {
-		//~ printf("\nprocess %i: write failure to %s\n", ppid, PPMYD);
-	//~ }
-	//~ fclose(fp);
 	return ppid;
 }
 int set_priority(int sched[])
@@ -486,30 +465,45 @@ char *commaprint(unsigned long long n)
 	static char retbuf[30];
 	p = &retbuf[sizeof(retbuf)-1];
 	int i = 0;
-	if(comma == '\0') {
-	  struct lconv *lcp = localeconv();
-	  if(lcp != NULL) {
-		   if(lcp->thousands_sep != NULL &&
-			    *lcp->thousands_sep != '\0')
-			    comma = *lcp->thousands_sep;
-		   else    comma = ',';
-	  }
+	if ( comma == '\0' ) {
+		struct lconv *lcp = localeconv();
+		if (lcp != NULL) {
+			if ( lcp->thousands_sep != NULL && *lcp->thousands_sep != '\0' ) {
+				comma = *lcp->thousands_sep;
+			}else{
+				comma = ',';
+			}
+		}
 	}
 	*p = '\0';
-	while (n != 0) {
-	  if(i%3 == 0 && i != 0) {
-		   *--p = comma;
-	  }
-	  *--p = '0' + n % 10;
-	  n /= 10;
-	  i++;
+	while ( n != 0 ) {
+		if( i % 3 == 0 && i != 0 ) {
+			*--p = comma;
+		}
+		*--p = '0' + n % 10;
+		n /= 10;
+		i++;
 	}
 	return p;
 }
-void timeFormat(char runtime[], double dursofar)
+double seconds_handler(int dhm[], double seconds)
+{
+	dhm[0] = (int)seconds/86400;
+	seconds = fmod(seconds, 86400);
+	dhm[1] = (int)seconds/3600;
+	seconds = fmod(seconds, 3600);
+	dhm[2] = (int)seconds/60;
+	return fmod(seconds, 60);
+}
+void timeFormat(int em13, char runtime[], double dursofar, double secdecs)
 {
 	int dhm[3] = {};
 	double secondx = seconds_handler(dhm, dursofar);
+	if ( em13 != 2 ) {
+		if ( secondx >= 60L - secdecs ) {
+			secondx = check_60(dhm, secondx, secdecs);
+		}
+	}
 	if ( dhm[0] == 0 ) {
 		if ( dhm[1] == 0 ) {
 			if ( dhm[2] == 0 ) {

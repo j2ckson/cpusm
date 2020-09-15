@@ -213,15 +213,7 @@ void print_stats_cs(prntsctrl psc)
 	if ( psc.colour == 1 ) printcc("", 2, psc.colour);
 	if ( psc.colour >= 2 ) printcc("", 1, psc.colour);
 	printf ("%-9i", psc.scnt);
-	if ( psc.idurh > 0 ) {
-		printf ("%4i:%02i:%05.2lf", psc.idurh,psc.idurm,psc.idurs);
-	}else if ( psc.idurm > 0 ) {
-		printf ("     %02i:%05.2lf", psc.idurm,psc.idurs);
-	}else if ( psc.zecdecz > 0.1 ) {
-		printf ("        %05.2lf", psc.idurs);
-	}else{
-		printf ("       %06.3lf", psc.idurs);
-	}
+	printf ("%s", psc.runtime);
 	if ( psc.colour == 3 ) {
 		for ( int i=2;i<4;i++ ) {
 			if ( psc.focus == i-1 ) {
@@ -1076,7 +1068,7 @@ void print_header_s(psheader psh)
 }
 void print_log_stats(prntsctrl psc, psv0 vv0)
 {
-	fprintf(fo, "%i,%.1lf,%.1lf,%02i:%02i:%06.3lf,", psc.scnt,psc.gen_stat[0][0],psc.gen_stat[0][1],psc.idurh,psc.idurm,psc.idurs);
+	fprintf(fo, "%i,%.1lf,%.1lf,%s,", psc.scnt,psc.gen_stat[0][0],psc.gen_stat[0][1],psc.runtime);
 	for ( int i=2;i<16;i++ ) {
 		fprintf(fo, "%4.2lf,", psc.gen_stat[0][i]);
 	}

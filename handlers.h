@@ -136,7 +136,7 @@ static struct termios g_old_kbd_mode;
 int set_ppid(int colour);
 int set_priority(int sched[]);
 int set_cpuAffinity(int cpuN, int rcnt);
-void check_60(void * t, double secdecs);
+double check_60(int dhm[], double secondx, double secdecs);
 static cnt_nsec_t get_time_nsec(void);
 static void old_attr(void);
 static void keyboard_attr(void);
@@ -151,6 +151,6 @@ int getsysversion(timeD *xx);
 int getsysname(timeD *xx);
 int getsysfreqgov(timeD *xx);
 char *commaprint(unsigned long long n);
-void timeFormat(char runtime[], double dursofar);
+void timeFormat(int em13, char runtime[], double dursofar, double secdecs);
 
 #endif

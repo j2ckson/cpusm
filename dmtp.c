@@ -271,7 +271,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 					if ( g->ch == 'q' ) {
 						sig_handler(SIGQUIT);
 						xx->sig = SIGQUIT;
-						timeFormat(psc->runtime, dur[0]);
+						timeFormat(em[13], psc->runtime, dur[0], dur[2]);
 						psc->scnt = em[12];
 						printf ("\x1b[1A");
 						if ( em[27] == 0 ) print_stats_c(*psc);
@@ -504,12 +504,12 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 			//~ if ( dur[1] ==0 ) dur[0] += idur1;
 			dur[0] += idur1;
 			xx->idur = dur[0];
-			t->iduri = dur[0];
-			t->idurh = (int)t->iduri/3600;
-			t->iduri = fmod(t->iduri, 3600);
-			t->idurm = (int)(t->iduri/60);
-			t->idurs = fmod(t->iduri, 60);
-			if ( t->idurs >= -0.005 && t->idurs <= 0 ) t->idurs = 0;
+			//~ t->iduri = dur[0];
+			//~ t->idurh = (int)t->iduri/3600;
+			//~ t->iduri = fmod(t->iduri, 3600);
+			//~ t->idurm = (int)(t->iduri/60);
+			//~ t->idurs = fmod(t->iduri, 60);
+			//~ if ( t->idurs >= -0.005 && t->idurs <= 0 ) t->idurs = 0;
 			clock_t exetime = clock();
 			xx->cpuspin = ((double)exetime - (double)exetime0)/(double)CLOCKS_PER_SEC;
 			double pcpu = (xx->cpuspin / cntsum * 100L) / pdiv;
@@ -542,11 +542,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 					}
 				}
 			}
-			if ( em[13] != 2 ) {
-				if ( t->idurs >= (60L - dur[2]) || t->idurs <= dur[2] ) {
-					check_60((void *)t, dur[2]);
-				}
-			}
 			if ( em[12] < rint((double)1/dur[2]) ) {
 				psc->gen_stat[0][0] = 100;
 				psc->gen_stat[0][1] = 0;
@@ -569,10 +564,11 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 				secondstogo = 0L;
 			}
 			double whichseconds = runtimetype==0?secondssofar:secondstogo;
-			timeFormat(psc->runtime, whichseconds);
-			psc->idurh = t->idurh;
-			psc->idurm = t->idurm;
-			psc->idurs = t->idurs;
+			double switch60 = runtimetype==0?2:em[13];
+			timeFormat(switch60, psc->runtime, whichseconds, dur[2]);
+			//~ psc->idurh = t->idurh;
+			//~ psc->idurm = t->idurm;
+			//~ psc->idurs = t->idurs;
 			psc->zecdecz = dur[2];
 			psc->colour = em[3];
 			if ( em[14] == 1 ) {
@@ -692,7 +688,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 	}
 	xx->sig = SIGQUIT;
 	psc->scnt = em[12];
-	timeFormat(psc->runtime, dur[0]);
+	timeFormat(em[13], psc->runtime, dur[0], dur[2]);
 	printf ("\x1b[1A");
 	if ( em[27] == 0 ) print_stats_c(*psc);
 	if ( em[27] == 1 ) print_stats_cs(*psc);

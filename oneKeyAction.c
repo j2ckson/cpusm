@@ -12,8 +12,6 @@ void *one_key_actionT(void * q)
 	FD_ZERO(&readfds);
 	FD_SET(fileno(stdin), &readfds);
 	struct timespec pseudoSleeps = {0,0};
-	//~ pseudoSleeps.tv_sec = interval/1;
-	//~ pseudoSleeps.tv_nsec = fmod(interval, 1) * NSECS;
 	while (1) {
 		pseudoSleeps.tv_sec = h->dekvar/1;
 		pseudoSleeps.tv_nsec = fmod(h->dekvar, 1) * NSECS;

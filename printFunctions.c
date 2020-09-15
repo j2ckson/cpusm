@@ -308,7 +308,6 @@ void print_stats(psv0 vv0)
 				print_colour(vv0.colour, vv0.stat[i], vv0.threshold, 0);
 			}
 			if ( vv0.colour != 7 ) print_max_colour(vv0.stat[i], vv0.max[vv0.verb][i], vv0.colour);
-			//~ print_max_colour(vv0.stat[i], vv0.max[vv0.verb][i], vv0.colour);
 			if ( (vv0.verb == 2 || vv0.verb ==4) && vv0.core == i ) printf(ACTIVECPU);
 			print_div(vv0.stat[i], vv0.verb);
 		}
@@ -1117,52 +1116,24 @@ void print_app_usage(void)
 	printf("runtime options \n\n");
 	printf("<h>: show runtime help\n");
 	printf("<a>: switch core affinity [base process only - established threads will not switch\n");
+	printf("<b>: switch 'count' statistic [running-samples*, remaining-samples]\n");
 	printf("<c>: switch stdout colour\n");
 	printf("<q>: quit cpusm\n");
 	printf("<j>: enable/disable statistics step display\n");
 	printf("<l>: enable/disable colour-mode focus scanning \n");
 	printf("<m>: enable/switch colour-mode focus \n");
-	printf("<s>: display cpusm summary statistics \n");
+	printf("<n>: switch 'runtime' statistic [running-time*, remaining-time]\n");
+	printf("<s>: display cpusm interim summary statistics \n");
+	printf("<v>: switch terminal display width\n");
 	printf("<x>: enable/disable periodic header printing \n");
 	printf("<z>: restart cpusm\n");
-	printf("<=>: display cpusm min/max/avg statistics\n");
-	printf("</>: switch output mode [fixed-line/scrolling]\n");
+	printf("<=>: display interim cpusm min/max/avg statistics\n");
+	printf("</>: switch terminal scrolling mode [fixed-line/scrolling]\n");
 	printf("<.>: display column headings\n");
-	printf("<`>: switch cpusm cpu utilization tracking [core/cpu]\n");
+	printf("<`>: switch pcpu accounting [per-core/aggregate]\n");
 	printf("<,>: enable/diable stdout [file logging-mode]]\n");
-	printf("<SPACE>||<v>: switch display mode [cpu.kernel/cpu.core/core.frequency/thermal/network]\n\n");
-//~ em[1]: cli option 'z' - total samples
-//~ em[2]: cli option 'n' - network device
-//~ em[3]: cli option 'c' - terminal output colour
-//~ em[4]: cli option 'q' - time tracking precision [0 == off, 1* == on]
-//~ em[5]: cli option 'y' - execution nice value [-20 to 20]
-//~ em[6]: cpusm process identification number [pid]
-//~ em[7]: cli option 'a' - cpusm core affinity
-//~ em[8]: cli option 'b' - core optimization algorithm [<0*> kernel, <1> min.cpu, <2> max.cpu, <3> random]
-//~ em[9]: cli option 'p' - time tracking alogrithm [0* - dynamic, 1 - static]
-//~ em[10]: cli option 'v' - cpusm statistics output type [0 - cpu kernel, 1 - network, 2 - core utilization, 3 - temperature, 4* core frequency]
-//~ em[11]: system processor count per sysconf(_SC_NPROCESSORS_CONF)
-//~ em[12]: running sample count
-//~ em[13]: cli option 's' - cpusm output mode [0* fixed-line, 1 scrolling]
-//~ em[14]: cli option 'k' - cpusm statistics output mode [0 - uni/em[10]-fixed, 1* multi]
-//~ em[15]: cli option 'r' - sample rate per second [1 - 1000, 10*]
-//~ em[16]: cli option 'l' - cpusm output mode [0* - stdout/terminal, 1 - stdout/terminal+file, 2 - file]
-//~ em[17]: cli option 'x' - cpusm periodic header display interval [40* - runtime switch default]
-//~ em[18]: copy of em[17] initial value
-//~ em[19]: cli option 'u' - cpusm statistics rolling average interval [1* - 999] seconds
-//~ em[20]: cli option 'e' - cpusm 'slip' interval [4*]
-//~ em[21]: cli option 'j' - cpusm statistics output step interval [1/j * r * u]
-//~ em[22]: copy of em[21] initial value
-//~ em[23]: cpusm statistics focus value
-//~ em[24]: cli option 'o' - cpusm application execution priority [0* - 99]
-//~ em[25]: cli option 'w' - cpusm process scheduling algorithm [0* - 6]
-//~ em[26]: cli option 'i' - cpusm start information mode [0* - normal, 1 - abbreviated]
-//~ em[27]: cli option 'm' - cpusm statistics display mode [0* - normal, 1 - short]
-//~ em[28]: cli option ' ' - cpusm client/server mode [not yet implemented]
-//~ dur[0]: cli option 'd' - cpusm execution duration [x.y seconds]
-//~ dur[1]: copy of dur[0] initial value
-//~ dur[2]: cli option 't' - cpusm sample interval [conflicts with em[15]]
-//~ dur[3]: cli option 'g' - coefficient of statistics sampling interval [g * t]
+	printf("<1>: enable/disable precise time-tracking\n");
+	printf("<SPACE>: switch display mode [cpu.kernel/cpu.core/core.frequency/thermal/network]\n\n");
 	return;
 }
 void print_logheader(int netdis, int corecnt)

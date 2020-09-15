@@ -8,14 +8,6 @@ cnt_nsec_t exptime, cnttime;
 pthread_mutex_t lock;
 struct timespec tstart= {0,0}, tend= {0,0};
 
-typedef struct timeZ
-{
-	int idurm, idurh, idurd, idurms, idurhs, idurds;
-	double idurs;
-	double idurss;
-	double iduri;
-} timeZ;
-
 typedef struct cpuZ
 {
 	char ch;

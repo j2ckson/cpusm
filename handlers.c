@@ -135,6 +135,7 @@ int getsystype(timeD *xx)
 	char sysid[128];
 	char na[4] = "n/a";
 	xx->sysid = strdup(na);
+	free(xx->sysid);
 	strcpy(sysidcmd, ID);
 	FILE *fp;
 	fp = popen(sysidcmd, "r");
@@ -195,6 +196,7 @@ int gethdd(timeD *xx, cpuZ *g)
 	char na[4] = "n/a";
 	xx->diskcnt = g->diskcnt = 0;
 	xx->disk[0] = strdup(na);
+	free(xx->disk[0]);
 	strcpy(hddcmd, DEFDSK);
 	FILE *fp;
 	fp = popen(hddcmd, "r");

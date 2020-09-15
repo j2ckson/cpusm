@@ -318,10 +318,8 @@ int main(int argc, char **argv)
 		strcat(appstart, " ");
 		strcat(appstart, argv[i]);
 	}
-//	signal(SIGINT, sig_handler);
 	
 	em[0] = dmtp(outputfile, appstart, dev, em, dur);
-	//~ free(appstart);
 	free(dev);
 	if ( em[0] == 11 ) {
 		old_attr();

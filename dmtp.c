@@ -26,7 +26,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 	prntsctrl *psc = (prntsctrl*) malloc( sizeof(prntsctrl));
 	psheader *psh = (psheader*) malloc( sizeof(psheader));
 	psv0 *vv0 = (psv0*)malloc( sizeof(psv0));
-	timeZ *t = (timeZ*)malloc( sizeof(timeZ));;
 	cpuZ *g = (cpuZ*)malloc( sizeof(cpuZ));
 	dur[0] = 0L;
 	xx->colour = em[3];
@@ -296,7 +295,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 						}
 						free(xx);
 						free(g);
-						free(t);
 						free(xy_string);
 						free(psc);
 						free(psh);
@@ -429,7 +427,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 						}
 						free(xx);
 						free(g);
-						free(t);
 						free(xy_string);
 						free(psc);
 						free(psh);
@@ -500,16 +497,8 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 			cnt1 = cnt0;
 			if ( em[9] == 0 ) idur1 = cnt;
 			if ( em[9] == 1 ) idur1 = dur[2];
-			//~ if ( dur[1] !=0 ) dur[0] -= idur1;
-			//~ if ( dur[1] ==0 ) dur[0] += idur1;
 			dur[0] += idur1;
 			xx->idur = dur[0];
-			//~ t->iduri = dur[0];
-			//~ t->idurh = (int)t->iduri/3600;
-			//~ t->iduri = fmod(t->iduri, 3600);
-			//~ t->idurm = (int)(t->iduri/60);
-			//~ t->idurs = fmod(t->iduri, 60);
-			//~ if ( t->idurs >= -0.005 && t->idurs <= 0 ) t->idurs = 0;
 			clock_t exetime = clock();
 			xx->cpuspin = ((double)exetime - (double)exetime0)/(double)CLOCKS_PER_SEC;
 			double pcpu = (xx->cpuspin / cntsum * 100L) / pdiv;
@@ -566,9 +555,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 			double whichseconds = runtimetype==0?secondssofar:secondstogo;
 			double switch60 = runtimetype==0?2:em[13];
 			timeFormat(switch60, psc->runtime, whichseconds, dur[2]);
-			//~ psc->idurh = t->idurh;
-			//~ psc->idurm = t->idurm;
-			//~ psc->idurs = t->idurs;
 			psc->zecdecz = dur[2];
 			psc->colour = em[3];
 			if ( em[14] == 1 ) {
@@ -712,7 +698,6 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 	}
 	free(xx);
 	free(g);
-	free(t);
 	free(xy_string);
 	free(psc);
 	free(psh);

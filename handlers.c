@@ -80,7 +80,7 @@ int termsize (int colour)
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 	if ( colour != 0 ) printf(CLOADLOW);
     printf ("terminal geometry: %i rows x %i columns\n", w.ws_row, w.ws_col);
-    return w.ws_col;
+    return w.ws_row;
 }
 static void old_attr(void)
 {

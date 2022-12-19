@@ -303,7 +303,7 @@ int dmtp(char *outputfile, char *appstart, char *dev, int em[], double dur[])
 						return em[0];
 					}
 					if ( g->ch == 'x' ) {
-						em[17]=em[17]==0?em[18]!=0?em[18]:screenHeight():0;
+						em[17]=em[17]==0?em[18]!=0?em[18]:termsize(0):0;
 						if ( em[21] != 0 ) {
 							if ( em[17] != 0 ) {
 								psh->colour = em[3];

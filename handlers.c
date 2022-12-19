@@ -526,4 +526,13 @@ void timeFormat(int em13, char runtime[], double dursofar, double secdecs)
 	}
 	return;
 }
-
+int screenHeight(void)
+{
+	struct winsize w;
+	w = termsize();
+	if (w.ws_row > 9) {
+	    return w.ws_row - 4;
+	}else{
+	    return w.ws_row;
+	}
+}

@@ -144,5 +144,6 @@ int getsysname(timeD *xx);
 int getsysfreqgov(timeD *xx);
 char *commaprint(unsigned long long n);
 void timeFormat(int em13, char runtime[], double dursofar, double secdecs);
+int screenHeight(void);
 
 #endif

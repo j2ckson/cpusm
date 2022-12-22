@@ -51,7 +51,7 @@ void *one_key_actionT(void * q)
 					if ( h->multistat == 1 || ( h->multistat == 0 && h->verb == 3 ) ) h->tStat[k] = temptemp;
 				}
 				h->ctemp = tempT/(double)h->thermalzones;
-				fclose(fp);
+				pclose(fp);
 				free(linebuf);
 				linebuf=NULL;
 			}
